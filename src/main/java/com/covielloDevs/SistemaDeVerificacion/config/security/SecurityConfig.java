@@ -36,12 +36,13 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(HttpMethod.POST,"/auth/login", "/v1/users/admin/create").permitAll()
-                            .requestMatchers("/v1/users/admin/**")
-                            .hasAnyRole("ADMIN", "DEV")
-                            .requestMatchers(HttpMethod.POST, "/v1/qr/validate-qr")
-                            .hasAnyRole("ADMIN", "DEV")
-                            .anyRequest().authenticated();
+//                    auth.requestMatchers(HttpMethod.POST,"/auth/login", "/v1/users/admin/create", "/v1/qr/validate-qr").permitAll()
+//                            .requestMatchers("/v1/users/admin/**")
+//                            .hasAnyRole("ADMIN", "DEV")
+//                            .requestMatchers(HttpMethod.POST, "/v1/qr/validate-qr")
+//                            .hasAnyRole("ADMIN", "DEV")
+//                            .anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 })
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

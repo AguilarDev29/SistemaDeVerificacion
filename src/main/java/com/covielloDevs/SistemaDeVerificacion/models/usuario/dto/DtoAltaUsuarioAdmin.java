@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import java.time.LocalDate;
 
@@ -16,6 +17,7 @@ public record DtoAltaUsuarioAdmin(
         String nombre,
         @Size(min = 7, max = 8, message = "El DNI debe tener entre 7 y 8 caracteres")
         @NotBlank(message = "El DNI es requerido")
+
         String dni,
         @NotNull(message = "El sexo es requerido")
         Sexo sexo,

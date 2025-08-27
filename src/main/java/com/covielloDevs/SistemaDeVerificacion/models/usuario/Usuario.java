@@ -45,8 +45,10 @@ public class Usuario implements UserDetails {
     @NotBlank
     private String nombre;
     @NotBlank
+    @Column(unique = true)
     private String dni;
     @Email
+    @Column(unique = true)
     private String email;
     private String telefono;
 //    @ManyToOne(fetch = FetchType.LAZY)
@@ -62,7 +64,8 @@ public class Usuario implements UserDetails {
     private String foto;
     private String pin;
     private Boolean activo;
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY,
+            orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Movimiento> movimientos = new HashSet<>();
     private LocalDateTime ultimoIngreso;
     private LocalDateTime ultimoEgreso;

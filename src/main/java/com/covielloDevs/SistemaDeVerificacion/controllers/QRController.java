@@ -8,6 +8,7 @@ import com.covielloDevs.SistemaDeVerificacion.services.qr.QRCodeService;
 import com.covielloDevs.SistemaDeVerificacion.services.qr.QRJwtService;
 import com.covielloDevs.SistemaDeVerificacion.services.security.UserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +47,8 @@ public class QRController {
         return ResponseEntity.ok(Map.of("qrToken", qrToken));
     }
 
-    @PostMapping("/validate-qr")
-    public ResponseEntity<Map<String, String>> validateToken(@RequestBody DtoQRToken qrToken){
+    @GetMapping("/validate-qr")
+    public ResponseEntity<Map<String, String>> validateToken(@RequestParam("qr-token") DtoQRToken qrToken){
         String username = qrJwtService.validateToken(qrToken.qrToken());
         Usuario usuario = (Usuario) userDetailsService.loadUserByUsername(username);
         movimientoService.createMovimiento(usuario, new Movimiento());

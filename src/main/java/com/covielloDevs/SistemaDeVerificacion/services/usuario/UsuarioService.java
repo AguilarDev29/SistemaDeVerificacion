@@ -4,6 +4,9 @@ import com.covielloDevs.SistemaDeVerificacion.models.usuario.Usuario;
 import com.covielloDevs.SistemaDeVerificacion.repositories.UsuarioRepository;
 import com.covielloDevs.SistemaDeVerificacion.utils.ISaveFiles;
 import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.UsuarioException;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.usuario.UsuarioDniDuplicateException;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.usuario.UsuarioEmailDuplicateException;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.usuario.UsuarioNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,7 +29,7 @@ public class UsuarioService implements IUsuarioService, ISaveFiles {
     @Override
     public Usuario getUser(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException(String.format("El usuario con id %s no exite", id)));
     }
 
     @Override
@@ -36,6 +39,13 @@ public class UsuarioService implements IUsuarioService, ISaveFiles {
 
     @Override
     public Usuario createUser(Usuario usuario) {
+
+        if(usuarioRepository.findByDni(usuario.getDni()).isPresent())
+            throw new UsuarioDniDuplicateException("El DNI ingresado ya existe");
+
+        if(usuarioRepository.findByEmail(usuario.getEmail()).isPresent())
+            throw new UsuarioEmailDuplicateException("El email ingresado ya existe");
+
         usuario.setUsername(usuario.getDni());
         usuario.setPassword(passwordEncoder.encode(usuario.getDni()));
         return usuarioRepository.save(usuario);
