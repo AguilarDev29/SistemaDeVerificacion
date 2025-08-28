@@ -5,10 +5,10 @@ import com.covielloDevs.SistemaDeVerificacion.models.usuario.Usuario;
 import com.covielloDevs.SistemaDeVerificacion.repositories.MovimientoRepository;
 import com.covielloDevs.SistemaDeVerificacion.repositories.UsuarioRepository;
 import com.covielloDevs.SistemaDeVerificacion.utils.enums.TipoIngreso;
-import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.MovimientoException;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.movimiento.MovimientoNotFoundException;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.usuario.UsuarioNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +25,8 @@ public class MovimientoService implements IMovimientoService{
     @Override
     public Movimiento getMovimiento(Long id) {
         return movimientoRepository.findById(id)
-                .orElseThrow(() -> new MovimientoException(HttpStatus.NOT_FOUND, "Movimiento no encontrado"));
+                .orElseThrow(() -> new MovimientoNotFoundException(String
+                        .format("Movimimiento con el id %s no encontado", id)));
     }
 
     @Override
@@ -42,7 +43,7 @@ public class MovimientoService implements IMovimientoService{
     public Page<Movimiento> getAllByUserAdmin(Pageable pageable, Long id) {
         var user = usuarioRepository.findById(id);
         if(user.isEmpty())
-            throw new MovimientoException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
+            throw new UsuarioNotFoundException(String.format("Usuario con el id %s no encontrado", id));
 
         return movimientoRepository.findAllByUsuario(pageable, user.get());
     }
@@ -66,7 +67,7 @@ public class MovimientoService implements IMovimientoService{
     @Override
     public void deleteMovimiento(Long id) {
         if(movimientoRepository.findById(id).isEmpty())
-            throw new MovimientoException(HttpStatus.NOT_FOUND, "Movimiento no encontrado");
+            throw new MovimientoNotFoundException(String.format("Movimiento con el id %s no encontrado", id));
 
         movimientoRepository.deleteById(id);
     }

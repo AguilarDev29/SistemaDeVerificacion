@@ -6,9 +6,10 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.TokenException;
+import com.covielloDevs.SistemaDeVerificacion.utils.ExpirationDate;
+import com.covielloDevs.SistemaDeVerificacion.utils.enums.TipoDuracion;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.token.TokenBadRequestException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ import java.time.ZoneOffset;
 public class QRJwtService {
     @Value("${qr.token.secret}")
     private String secret;
-    @Value("${qr.token.expiration.seconds}")
+    @Value("${qr.token.expiration.minutes}")
     private Long expiration;
 
     public String generateToken(UserDetails userDetails){
@@ -30,11 +31,12 @@ public class QRJwtService {
                     .withIssuer("kav-user-entry-request")
                     .withSubject(userDetails.getUsername())
                     .withClaim("purpose", "QR_ENTRY_REQUEST")
-                    .withExpiresAt(generateExpirationDate())
+                    .withExpiresAt(ExpirationDate.generate(expiration, TipoDuracion.MINUTO))
                     .sign(algorithm);
 
         } catch (JWTCreationException exception){
-            throw new TokenException(HttpStatus.BAD_REQUEST, "Error al generar token QR");
+            throw new TokenBadRequestException("Error al generar token QR");
+
         }
     }
 
@@ -48,11 +50,8 @@ public class QRJwtService {
             DecodedJWT decodedJWT = verifier.verify(token);
             return decodedJWT.getSubject();
         } catch (JWTVerificationException exception){
-            throw new TokenException(HttpStatus.NOT_FOUND, "Token invalido");
+            throw new TokenBadRequestException("Token inválido");
         }
     }
 
-    private Instant generateExpirationDate(){
-        return LocalDateTime.now().plusSeconds(expiration).toInstant(ZoneOffset.of("-03:00"));
-    }
 }

@@ -6,9 +6,10 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.TokenException;
+import com.covielloDevs.SistemaDeVerificacion.utils.ExpirationDate;
+import com.covielloDevs.SistemaDeVerificacion.utils.enums.TipoDuracion;
+import com.covielloDevs.SistemaDeVerificacion.utils.exceptions.token.TokenBadRequestException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,11 @@ public class JwtService {
             return JWT.create()
                     .withIssuer("kav-api")
                     .withSubject(userDetails.getUsername())
-                    .withExpiresAt(generateExpirationDate())
+                    .withExpiresAt(ExpirationDate.generate(expiration, TipoDuracion.HORA))
                     .sign(algorithm);
 
         } catch (JWTCreationException exception){
-            throw new TokenException(HttpStatus.BAD_REQUEST, "Error al generar token");
+            throw new TokenBadRequestException("Error al generar token");
         }
     }
 
@@ -47,11 +48,8 @@ public class JwtService {
             DecodedJWT decodedJWT = verifier.verify(token);
             return decodedJWT.getSubject();
         } catch (JWTVerificationException exception){
-            throw new TokenException(HttpStatus.NOT_FOUND, "Token invalido");
+            throw new TokenBadRequestException("Token inválido");
         }
     }
 
-    private Instant generateExpirationDate(){
-        return LocalDateTime.now().plusHours(expiration).toInstant(ZoneOffset.of("-03:00"));
-    }
 }
