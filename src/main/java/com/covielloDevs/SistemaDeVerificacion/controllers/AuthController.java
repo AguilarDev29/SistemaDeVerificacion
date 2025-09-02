@@ -34,6 +34,4 @@ public class AuthController {
         var token = jwtService.generateToken(user);
         return ResponseEntity.ok(new DtoTokenUser(token));
     }
-
-
 }

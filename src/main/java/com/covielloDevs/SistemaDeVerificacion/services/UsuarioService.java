@@ -1,4 +1,4 @@
-package com.covielloDevs.SistemaDeVerificacion.services.usuario;
+package com.covielloDevs.SistemaDeVerificacion.services;
 
 import com.covielloDevs.SistemaDeVerificacion.models.usuario.Usuario;
 import com.covielloDevs.SistemaDeVerificacion.repositories.UsuarioRepository;
@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Service
-public class UsuarioService implements IUsuarioService {
+public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final ISaveFiles saveFiles;
@@ -26,24 +26,21 @@ public class UsuarioService implements IUsuarioService {
         this.saveFiles = saveFiles;
     }
 
-    @Override
     public Usuario getUser(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(String.format("El usuario con id %s no exite", id)));
     }
 
-    @Override
     public Page<Usuario> getAllUsers(Pageable pageable) {
         return usuarioRepository.findAll(pageable);
     }
 
-    @Override
     public Usuario createUser(Usuario usuario) {
 
-        if(usuarioRepository.findByDni(usuario.getDni()).isPresent())
+        if(usuarioRepository.existsByDni(usuario.getDni()))
             throw new UsuarioDniDuplicateException("El DNI ingresado ya existe");
 
-        if(usuarioRepository.findByEmail(usuario.getEmail()).isPresent())
+        if(usuarioRepository.existsByEmail(usuario.getEmail()))
             throw new UsuarioEmailDuplicateException("El email ingresado ya existe");
 
         usuario.setUsername(usuario.getDni());
@@ -51,12 +48,17 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    @Override
     public Usuario updateUserAdmin(Usuario usuario, long id) {
         var userToUpdate = usuarioRepository.findById(id);
 
         if(userToUpdate.isEmpty())
-            throw new UsuarioNotFoundException(String.format("Usuario con id %s no encontrado", usuario.getId()));
+            throw new UsuarioNotFoundException(String.format("Usuario con id %s no encontrado", id));
+
+        if(usuarioRepository.existsByDni(usuario.getDni()))
+            throw new UsuarioDniDuplicateException("El DNI ingresado ya existe");
+
+        if(usuarioRepository.existsByEmail(usuario.getEmail()))
+            throw new UsuarioEmailDuplicateException("El email ingresado ya existe");
 
         if(usuario.getApellido() != null) userToUpdate.get()
                 .setApellido(usuario.getApellido());
@@ -64,8 +66,6 @@ public class UsuarioService implements IUsuarioService {
                 .setNombre(usuario.getNombre());
         if(usuario.getDni() != null) userToUpdate.get()
                 .setDni(usuario.getDni());
-        if(usuario.getSexo() != null) userToUpdate.get()
-                .setSexo(usuario.getSexo());
         if(usuario.getFechaNacimiento() != null) userToUpdate.get()
                 .setFechaNacimiento(usuario.getFechaNacimiento());
         if(usuario.getEmail() != null) userToUpdate.get()
@@ -77,12 +77,12 @@ public class UsuarioService implements IUsuarioService {
 
         return usuarioRepository.save(userToUpdate.get());
     }
-    @Override
+
     public Usuario updateUser(Usuario usuario, long id){
         var userToUpdate = usuarioRepository.findById(id);
 
         if(userToUpdate.isEmpty())
-            throw new UsuarioNotFoundException(String.format("Usuario con id %s no encontrado", usuario.getId()));
+            throw new UsuarioNotFoundException(String.format("Usuario con id %s no encontrado", id));
 
         if(usuario.getApellido() != null) userToUpdate.get()
                 .setApellido(usuario.getApellido());
@@ -94,18 +94,15 @@ public class UsuarioService implements IUsuarioService {
                 .setTelefono(usuario.getTelefono());
         if(usuario.getFechaNacimiento() != null) userToUpdate.get()
                 .setFechaNacimiento(usuario.getFechaNacimiento());
-        if(usuario.getSexo() != null) userToUpdate.get()
-                .setSexo(usuario.getSexo());
+
 
         return usuarioRepository.save(userToUpdate.get());
     }
 
-    @Override
     public Boolean changePassword(Usuario usuario, String password) {
         return null;
     }
 
-    @Override
     public Usuario addFoto(Long id, MultipartFile foto) throws IOException {
         if(foto.isEmpty())
             throw new RuntimeException("La imagen es requerida");
@@ -119,7 +116,6 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.save(usuario.get());
     }
 
-    @Override
     public void enableDisableUser(long id, boolean enable) {
         var user = usuarioRepository.findById(id);
         if(user.isEmpty())
@@ -133,7 +129,6 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.save(user.get());
     }
 
-    @Override
     public void deleteUser(long id) {
         if(usuarioRepository.findById(id).isEmpty())
             throw new UsuarioNotFoundException(String.format("Usuario con id %s no encontrado", id));

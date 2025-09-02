@@ -6,7 +6,7 @@ import com.covielloDevs.SistemaDeVerificacion.models.usuario.dto.DtoDatosUsuario
 import com.covielloDevs.SistemaDeVerificacion.models.usuario.dto.DtoUpdateUsuario;
 import com.covielloDevs.SistemaDeVerificacion.models.usuario.dto.DtoUpdateUsuarioAdmin;
 import com.covielloDevs.SistemaDeVerificacion.services.qr.QRCodeService;
-import com.covielloDevs.SistemaDeVerificacion.services.usuario.IUsuarioService;
+import com.covielloDevs.SistemaDeVerificacion.services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +23,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/v1/users")
 public class UsuarioController {
-    private final IUsuarioService usuarioService;
+    private final UsuarioService usuarioService;
     private final QRCodeService qrCodeService;
-    public UsuarioController(IUsuarioService usuarioService, QRCodeService qrCodeService) {
+    public UsuarioController(UsuarioService usuarioService, QRCodeService qrCodeService) {
         this.usuarioService = usuarioService;
         this.qrCodeService = qrCodeService;
     }

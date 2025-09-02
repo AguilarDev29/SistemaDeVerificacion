@@ -14,8 +14,6 @@ public record DtoUpdateUsuarioAdmin(
         @Email(message = "El email no es valido")
         String email,
         String telefono,
-        LocalDate fechaNacimiento,
-        Sexo sexo,
         Rol rol
 ) {
 }

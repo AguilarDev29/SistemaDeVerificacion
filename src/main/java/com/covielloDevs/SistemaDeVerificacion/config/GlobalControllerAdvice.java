@@ -23,7 +23,7 @@ public class GlobalControllerAdvice {
     }
 
     @ExceptionHandler(value = UsuarioNotFoundException.class)
-    public ResponseEntity<String> usuarioException(UsuarioEmailDuplicateException e){
+    public ResponseEntity<String> usuarioNotFoundException(UsuarioNotFoundException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 

@@ -19,10 +19,6 @@ public record DtoAltaUsuarioAdmin(
         @NotBlank(message = "El DNI es requerido")
 
         String dni,
-        @NotNull(message = "El sexo es requerido")
-        Sexo sexo,
-        @NotNull(message = "La fecha de nacimiento es requerida")
-        LocalDate fechaNacimiento,
         @NotBlank(message = "El email es requerido")
         @Email(message = "El email no es válido")
         String email,

@@ -10,8 +10,6 @@ public record DtoUpdateUsuario(
         String nombre,
         @Email
         String email,
-        String telefono,
-        LocalDate fechaNacimiento,
-        Sexo sexo
+        String telefono
 ) {
 }

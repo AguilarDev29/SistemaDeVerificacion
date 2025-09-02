@@ -1,8 +1,7 @@
 package com.covielloDevs.SistemaDeVerificacion.controllers;
 
-import com.covielloDevs.SistemaDeVerificacion.services.SaveFileService;
+import com.covielloDevs.SistemaDeVerificacion.services.DataReaderService;
 import com.covielloDevs.SistemaDeVerificacion.utils.dataReader.ExcelDataReader;
-import com.covielloDevs.SistemaDeVerificacion.utils.dataReader.IDataReader;
 import com.covielloDevs.SistemaDeVerificacion.utils.saveFiles.SaveSpreadSheet;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +15,16 @@ import java.util.Map;
 @RequestMapping("/v1/data")
 public class DataReaderController {
 
-    private final ExcelDataReader excelDataReader;
+    private final DataReaderService dataReaderService;
     private final SaveSpreadSheet saveSpreadSheet;
-    public DataReaderController(ExcelDataReader excelDataReader, SaveSpreadSheet saveSpreadSheet) {
-        this.excelDataReader = excelDataReader;
+    public DataReaderController(DataReaderService dataReaderService, SaveSpreadSheet saveSpreadSheet) {
+        this.dataReaderService = dataReaderService;
         this.saveSpreadSheet = saveSpreadSheet;
     }
 
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getData(@RequestParam("filePath") String filePath) throws Exception {
-        return ResponseEntity.ok(excelDataReader.read(filePath));
+    public ResponseEntity<String> getData(@RequestParam("filePath") String filePath) throws Exception {
+        return ResponseEntity.ok(dataReaderService.readData(filePath));
     }
 
     @PostMapping
